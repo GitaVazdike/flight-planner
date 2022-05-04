@@ -1,9 +1,9 @@
 package io.codelex.flightplanner.controllers;
 
-import io.codelex.flightplanner.objects.Airport;
-import io.codelex.flightplanner.objects.Flight;
-import io.codelex.flightplanner.objects.PageResult;
-import io.codelex.flightplanner.objects.SearchFlightsRequest;
+import io.codelex.flightplanner.api.Airport;
+import io.codelex.flightplanner.api.Flight;
+import io.codelex.flightplanner.api.PageResult;
+import io.codelex.flightplanner.api.SearchFlightsRequest;
 import io.codelex.flightplanner.services.FlightService;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,4 +1,4 @@
-package io.codelex.flightplanner.objects;
+package io.codelex.flightplanner.api;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;

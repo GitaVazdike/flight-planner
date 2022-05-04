@@ -1,7 +1,10 @@
-package io.codelex.flightplanner.objects;
+package io.codelex.flightplanner.api;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public class SearchFlightsRequest {
     @Valid
@@ -10,9 +13,10 @@ public class SearchFlightsRequest {
     @NotNull
     private String to;
     @NotNull
-    private String departureDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate departureDate;
 
-    public SearchFlightsRequest(String from, String to, String departureDate) {
+    public SearchFlightsRequest(String from, String to, LocalDate departureDate) {
         this.from = from;
         this.to = to;
         this.departureDate = departureDate;
@@ -34,11 +38,11 @@ public class SearchFlightsRequest {
         this.to = to;
     }
 
-    public String getDepartureDate() {
+    public LocalDate getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(String departureDate) {
+    public void setDepartureDate(LocalDate departureDate) {
         this.departureDate = departureDate;
     }
 
