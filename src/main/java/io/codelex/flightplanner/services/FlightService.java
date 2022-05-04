@@ -1,6 +1,6 @@
 package io.codelex.flightplanner.services;
 
-import io.codelex.flightplanner.objects.*;
+import io.codelex.flightplanner.api.*;
 import io.codelex.flightplanner.repository.FlightRepository;
 import org.springframework.stereotype.Service;
 

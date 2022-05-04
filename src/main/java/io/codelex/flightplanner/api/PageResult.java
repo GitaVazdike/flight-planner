@@ -1,4 +1,4 @@
-package io.codelex.flightplanner.objects;
+package io.codelex.flightplanner.api;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ public class PageResult {
     private int totalItems;
     private List<Flight> items;
 
-    public PageResult(int page, int totalItems, List<Flight> items) {
-        this.page = page;
-        this.totalItems = totalItems;
+    public PageResult(List<Flight> items) {
+        page = 0;
+        totalItems = items.size();
         this.items = items;
     }
 

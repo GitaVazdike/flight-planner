@@ -1,11 +1,10 @@
 package io.codelex.flightplanner.repository;
 
-import io.codelex.flightplanner.objects.*;
+import io.codelex.flightplanner.api.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +17,14 @@ public class FlightRepository {
         listOfFlights.clear();
     }
 
-    public Flight addFlight(AddFlightRequest addFlightRequest) {
+    public synchronized Flight addFlight(AddFlightRequest addFlightRequest) {
         Flight flight = new Flight(idCounter, addFlightRequest);
 
         if (listOfFlights.contains(flight)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
-        if (isTheSameAirport(addFlightRequest) || isInvalidDate(flight)) {
+        if (flight.getFrom().isTheSameAirport(addFlightRequest) || isInvalidDate(flight)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
@@ -34,60 +33,34 @@ public class FlightRepository {
         return flight;
     }
 
-    public void deleteFlightById(long id) {
+    public synchronized void deleteFlightById(long id) {
         listOfFlights.removeIf(flight -> flight.getId() == id);
     }
 
     public Flight searchFlightById(long id) {
-        Flight flightFound = null;
-        for (Flight flight : listOfFlights) {
-            if (flight.getId() == id) {
-                flightFound = flight;
-            }
-        }
-        if (flightFound == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return flightFound;
+        return listOfFlights.stream()
+                .filter(flight -> flight.getId() == id)
+                .findAny()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     public List<Airport> getAirport(String search) {
-        List<Airport> airportList = new ArrayList<>();
-        String formattedSearchString = search.trim().toUpperCase();
-
-        for (Flight flight : listOfFlights) {
-            if (flight.getFrom().getCountry().toUpperCase().contains(formattedSearchString)
-                    || flight.getFrom().getCity().toUpperCase().contains(formattedSearchString)
-                    || flight.getFrom().getAirport().toUpperCase().contains(formattedSearchString)) {
-                airportList.add(flight.getFrom());
-            }
-        }
-        return airportList;
+        return listOfFlights.stream()
+                .map(Flight::getFrom)
+                .filter(airport -> airport.matchesSearchedPhrase(search))
+                .toList();
     }
 
     public PageResult searchFlight(SearchFlightsRequest searchFlightsRequest) {
-        List<Flight> flightsFound = new ArrayList<>();
 
-        if (searchFlightsRequest.getFrom().equalsIgnoreCase(searchFlightsRequest.getTo())) {
+        if (searchFlightsRequest.getFrom().equals(searchFlightsRequest.getTo())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        for (Flight flight : listOfFlights) {
-            String flightDepartureDateToString = flight.getDepartureTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-            if (flight.getFrom().getAirport().equals(searchFlightsRequest.getFrom())
-                    && flight.getTo().getAirport().equals(searchFlightsRequest.getTo())
-                    && flightDepartureDateToString.equals(searchFlightsRequest.getDepartureDate())) {
-                flightsFound.add(flight);
-            }
-        }
-        return new PageResult(0, flightsFound.size(), flightsFound);
-    }
-
-    private boolean isTheSameAirport(AddFlightRequest addFlightRequest) {
-        return addFlightRequest.getFrom().getAirport().trim().equalsIgnoreCase(addFlightRequest.getTo().getAirport().trim())
-                && addFlightRequest.getFrom().getCity().trim().equalsIgnoreCase(addFlightRequest.getTo().getCity().trim())
-                && addFlightRequest.getFrom().getCountry().trim().equalsIgnoreCase(addFlightRequest.getTo().getCountry().trim());
+        return new PageResult(listOfFlights
+                .stream()
+                .filter(flight -> flight.matchesSearchRequest(searchFlightsRequest))
+                .toList());
     }
 
     private boolean isInvalidDate(Flight flight) {

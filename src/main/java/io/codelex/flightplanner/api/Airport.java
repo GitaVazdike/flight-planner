@@ -1,4 +1,4 @@
-package io.codelex.flightplanner.objects;
+package io.codelex.flightplanner.api;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
@@ -41,12 +41,28 @@ public class Airport {
         this.airport = airport;
     }
 
+    public boolean matchesSearchedPhrase(String search) {
+        String formattedSearchString = search.trim().toUpperCase();
+
+        return getCountry().toUpperCase().contains(formattedSearchString)
+                || getCity().toUpperCase().contains(formattedSearchString)
+                || getAirport().toUpperCase().contains(formattedSearchString);
+    }
+
+    public boolean isTheSameAirport(AddFlightRequest addFlightRequest) {
+        return addFlightRequest.getFrom().getAirport().trim().equalsIgnoreCase(addFlightRequest.getTo().getAirport().trim())
+                && addFlightRequest.getFrom().getCity().trim().equalsIgnoreCase(addFlightRequest.getTo().getCity().trim())
+                && addFlightRequest.getFrom().getCountry().trim().equalsIgnoreCase(addFlightRequest.getTo().getCountry().trim());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Airport)) return false;
         Airport airport1 = (Airport) o;
-        return Objects.equals(getCountry(), airport1.getCountry()) && Objects.equals(getCity(), airport1.getCity()) && Objects.equals(getAirport(), airport1.getAirport());
+        return Objects.equals(getCountry(), airport1.getCountry())
+                && Objects.equals(getCity(), airport1.getCity())
+                && Objects.equals(getAirport(), airport1.getAirport());
     }
 
     @Override

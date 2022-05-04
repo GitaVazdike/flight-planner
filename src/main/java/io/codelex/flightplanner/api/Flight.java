@@ -1,4 +1,4 @@
-package io.codelex.flightplanner.objects;
+package io.codelex.flightplanner.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -73,6 +73,13 @@ public class Flight {
 
     public void setArrivalTime(LocalDateTime arrivalTime) {
         this.arrivalTime = arrivalTime;
+    }
+
+    public boolean matchesSearchRequest(SearchFlightsRequest searchFlightsRequest) {
+
+        return getFrom().getAirport().equals(searchFlightsRequest.getFrom())
+                && getTo().getAirport().equals(searchFlightsRequest.getTo())
+                && departureTime.toLocalDate().equals(searchFlightsRequest.getDepartureDate());
     }
 
     @Override
