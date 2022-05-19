@@ -1,5 +1,4 @@
 package io.codelex.flightplanner;
-
 import io.codelex.flightplanner.api.AddFlightRequest;
 import io.codelex.flightplanner.api.Airport;
 import io.codelex.flightplanner.api.Flight;
