@@ -6,6 +6,7 @@ import io.codelex.flightplanner.services.FlightService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/testing-api")
 public class TestController {
 
     private FlightService flightService;
@@ -16,13 +17,13 @@ public class TestController {
         this.airportDatabaseService = airportDatabaseService;
     }
 
-    @PostMapping("/testing-api/clear")
+    @PostMapping("/clear")
     public void clearFlights() {
         flightService.clearFlights();
     }
 
     @GetMapping("/add-test-flight")
     public void addTestFlight() {
-        airportDatabaseService.addAirport(new Airport("Latvia", "Riga", "Rix"));
+        airportDatabaseService.addAirport(new Airport("Latvia", "Riga", "RIX"));
     }
 }

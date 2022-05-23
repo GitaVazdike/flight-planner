@@ -2,29 +2,51 @@ package io.codelex.flightplanner.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+@Entity
 public class Flight {
+
+    @Id
+    @GeneratedValue
     private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "from_id")
     private Airport from;
+
+    @ManyToOne
+    @JoinColumn(name = "to_id")
     private Airport to;
+
     private String carrier;
+
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime departureTime;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime arrivalTime;
 
+    @Transient
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public Flight(long id, AddFlightRequest addFlightRequest) {
-        this.id = id;
+    public Flight(AddFlightRequest addFlightRequest) {
+//        this.id = id;
         from = addFlightRequest.getFrom();
         to = addFlightRequest.getTo();
         carrier = addFlightRequest.getCarrier();
         departureTime = LocalDateTime.parse(addFlightRequest.getDepartureTime(), formatter);
         arrivalTime = LocalDateTime.parse(addFlightRequest.getArrivalTime(), formatter);
+    }
+
+    public Flight() {
+
     }
 
     public long getId() {

@@ -17,16 +17,17 @@ public class FlightRepository {
         listOfFlights.clear();
     }
 
-    public synchronized Flight addFlight(AddFlightRequest addFlightRequest) {
-        Flight flight = new Flight(idCounter, addFlightRequest);
+    public synchronized Flight addFlight(Flight flight) {
+        flight.setId(idCounter);
+//        Flight flight = new Flight(idCounter, addFlightRequest);
 
         if (listOfFlights.contains(flight)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
-        if (flight.getFrom().isTheSameAirport(addFlightRequest) || isInvalidDate(flight)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+//        if (flight.getFrom().isTheSameAirport(addFlightRequest) || isInvalidDate(flight)) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+//        }
 
         idCounter++;
         listOfFlights.add(flight);
@@ -63,10 +64,10 @@ public class FlightRepository {
                 .toList());
     }
 
-    private boolean isInvalidDate(Flight flight) {
-        return flight.getDepartureTime().equals(flight.getArrivalTime())
-                || flight.getDepartureTime().isAfter(flight.getArrivalTime());
-    }
+//    private boolean isInvalidDate(Flight flight) {
+//        return flight.getDepartureTime().equals(flight.getArrivalTime())
+//                || flight.getDepartureTime().isAfter(flight.getArrivalTime());
+//    }
 
 }
 
